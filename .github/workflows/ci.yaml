@@ -1,0 +1,25 @@
+name: test
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    environment: main-example-deploy
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun i --frozen-lockfile
+      - run: bun run src/config.ts
+        env:
+          NODE_ENV: production
+          HTTP_PORT: 80
+          SMTP_PORT: 25
